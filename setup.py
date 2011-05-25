@@ -4,6 +4,7 @@ from setuptools import setup, find_packages
 setup(name='cybercom',
       version='0.0',
       packages= find_packages(),
-      install_requires = ['pymongo', 'psycopg2', 'iso8601', 'simplejson', 'sqlalchemy', 'cherrypy'] 
+      install_requires = ['pymongo', 'psycopg2', 'iso8601', 'simplejson', 
+                          'sqlalchemy', 'cherrypy', 'numpy'] 
       # need to yank out cherrypy dep, but leaving for now      
 )
