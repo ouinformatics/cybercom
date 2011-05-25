@@ -9,6 +9,7 @@ from datetime import datetime
 # echo "fire.rccc.ou.edu:5432:*:username:password" >> ~/.pgpass
 # chmod 600 ~/.pgpass
 engine = create_engine('postgresql://fire.rccc.ou.edu:5432/cybercom')#, echo=True)
+engine.execute('set search_path to catalog;')
 Session = sessionmaker(bind=engine)
 session = Session()
 
