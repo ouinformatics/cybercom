@@ -70,7 +70,8 @@ def variables(aggregation=aggregation):
 
 def locationinfo(location):
     cat = datalayer.Metadata()
-    return cat.Search('dt_location', ['lat','lon','loc_id'], where="loc_id = '%s'" %(location))
+    return cat.Search('dt_location', ['lat','lon','loc_id'], 
+            where="loc_id = '%s'" %(location))
 
 def getvar(location='US-FPE', 
            variable='NEE_or_fANN', 
@@ -113,7 +114,8 @@ def getvar(location='US-FPE',
                 return np.array( [ (item['StartDate'], item['Period'], 
                                 item[variable]) for item in cur ], 
                                 dtype = {'names':['date','week',variable], 
-                                'formats': ['object','i4', 'f4'] }).view(np.recarray)
+                                'formats': ['object','i4', 'f4'] }
+                                ).view(np.recarray)
             if as_method == 'dict':
                 return [item for item in cur]
         elif aggregation == 'hourly':
