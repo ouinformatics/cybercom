@@ -1,0 +1,8 @@
+pymongo 
+psycopg2 
+iso8601
+simplejson
+geojson
+sqlalchemy
+cherrypy
+numpy
