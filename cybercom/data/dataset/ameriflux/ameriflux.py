@@ -112,7 +112,8 @@ def getvar(location='US-FPE',
             week = db['weekly']
             cur = week.find({'location': location, 
                              'StartDate': { '$gte': date_from }, 
-                             'EndDate': { '$lte': date_to} }, 
+                             'EndDate': { '$lte': date_to},
+                             variable: {'$gt': -9999} }, 
                              [variable, 'Period', 'StartDate'])
             if as_method == 'numpy':
                 return np.array( [ (item['StartDate'], item['Period'], 
@@ -123,9 +124,35 @@ def getvar(location='US-FPE',
             if as_method == 'dict':
                 return [item for item in cur]
         elif aggregation == 'hourly':
-            pass # not implemented
+            hour = db['hourly']
+            cur = hour.find({'location': location,
+                             'StartDate': { '$gte': date_from },
+                             'StartDate': { '$lte': date_to}, 
+                             variable: {'$gt': -9999} },
+                             [variable, 'Hour', 'StartDate'])
+            if as_method == 'numpy':
+                return np.array( [ (item['StartDate'], item['Hour'], 
+                                item[variable]) for item in cur ], 
+                                dtype = {'names':['date','Hour',variable], 
+                                'formats': ['object','i4', 'f4'] }
+                                ).view(np.recarray)
+            if as_method == 'dict':
+                return [item for item in cur]
         elif aggregation == 'daily':
-            pass # not implemented
+            day = db['daily']
+            cur = day.find({'location': location,
+                             'StartDate': { '$gte': date_from },
+                             'StartDate': { '$lte': date_to},
+                             variable: {'$gt': -9999} },
+                             [variable, 'Day', 'StartDate'])
+            if as_method == 'numpy':
+                return np.array( [ (item['StartDate'], item['Day'],
+                                item[variable]) for item in cur ],
+                                dtype = {'names':['date','Day',variable],
+                                'formats': ['object','i4', 'f4'] }
+                                ).view(np.recarray)
+            if as_method == 'dict':
+                return [item for item in cur]
     else:
         out_msg = """Unknown aggregation or variable, know aggregations are %s
            Variables are %s"""
