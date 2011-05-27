@@ -9,11 +9,7 @@ Import module:
 
 """
 import datetime
-
-try:
-    import numpy as np
-except:
-    print "numpy is not installed, getvar(as_method='numpy') will not work"
+import numpy as np
 
 AMF_DB='amf_level4'
 aggregation='weekly'
@@ -99,7 +95,8 @@ def getvar(location='US-FPE',
             month = db['monthly']
             cur = month.find({'location': location, 
                                 'StartDate': { '$gte': date_from }, 
-                                'EndDate': { '$lte': date_to } }, 
+                                'EndDate': { '$lte': date_to },
+                                variable : { '$gt': -9999 } }, 
                                 [variable, 'Month', 'StartDate'])
             if as_method == 'numpy':
                 return np.array([ ( item['StartDate'], 
