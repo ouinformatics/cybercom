@@ -84,5 +84,5 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id'):
         return json.dumps(db.collection_names())
     
     cur = col.find(fields=[x,y,idcol])
-    return [ geojson.dumps(geojson.Point((item [x], item[y]))) 
-                for item in cur if x in item.keys() and y in item.keys()]
+    return geojson.dumps(geojson.FeatureCollection([ geojson.Point((item [x], item[y]))
+                for item in cur if x in item.keys() and y in item.keys() ]), indent=2)

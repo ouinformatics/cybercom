@@ -1,6 +1,6 @@
 import cherrypy
 import json 
-from cybercom.data.mongo.get import find
+from cybercom.data.mongo.get import find, find_loc
 
 def mimetype(type):
     def decorate(func):
@@ -12,9 +12,24 @@ def mimetype(type):
 
 class Root(object):
     @cherrypy.expose
+    def index(self):
+        return None
+    @cherrypy.expose
     @mimetype('application/json')
-    def db_find( self, db=None, col=None, query=None, callback=None, showids=None, date=None):
+    def db_find(self, db=None, col=None, query=None, callback=None, showids=None, date=None):
         """ 
         Wrapper for underlying pymongo access
         """
         return find(db, col, query, callback, showids, date)
+    @cherrypy.expose
+    @mimetype('application/json')
+    def find_loc(self, db=None, col=None, x='lon', y='lat', idcol='_id'):
+        return find_loc( db, col, x, y, idcol)
+
+cherrypy.tree.mount(Root())
+application = cherrypy.tree
+
+if __name__ == '__main__':
+    cherrypy.engine.start()
+    cherrypy.engine.block()
+
