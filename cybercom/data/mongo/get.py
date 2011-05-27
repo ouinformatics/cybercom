@@ -4,6 +4,10 @@ from json_handler import handler
 import ast
 import iso8601
 import json
+import geojson
+
+host='fire.rccc.ou.edu'
+
 def find( db=None, col=None, query=None, callback=None, showids=False, date=None):
     """Find data from a specific mongoDB db and collection
         :param db: Optional, mongodb database, if not specified a list of dbs is returned
@@ -16,7 +20,7 @@ def find( db=None, col=None, query=None, callback=None, showids=False, date=None
         At the moment this method assumes you want output as JSON, should probably refactor to default to dict and
         allow options for JSON/JSONP
     """
-    con = Connection()
+    con = Connection(host)
     # if db is set create db object, else show db names
     if db:
         db = con[db]
@@ -60,3 +64,25 @@ def find( db=None, col=None, query=None, callback=None, showids=False, date=None
         return str(callback) + '(' + serialized + ')'
     else:
         return serialized
+
+def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id'):
+    """
+    For a specific lat/lon column pair return GeoJSON representation.
+    
+    Example:
+    >>> get.find_loc('flora', 'data', x='midlon', y='midlat', idcol='REF_NO')
+    """
+    con = Connection(host)
+    if db:
+        db = con[db]
+    else:
+        return json.dumps(con.database_names())
+    
+    if col:
+        col = db[col]
+    else:
+        return json.dumps(db.collection_names())
+    
+    cur = col.find(fields=[x,y,idcol])
+    return [ geojson.dumps(geojson.Point((item [x], item[y]))) 
+                for item in cur if x in item.keys() and y in item.keys()]
