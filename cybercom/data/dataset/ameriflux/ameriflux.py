@@ -127,7 +127,7 @@ def getvar(location='US-FPE',
             hour = db['hourly']
             cur = hour.find({'location': location,
                              'StartDate': { '$gte': date_from },
-                             'StartDate': { '$lte': date_to}, 
+                             'EndDate': { '$lte': date_to}, 
                              variable: {'$gt': -9999} },
                              [variable, 'Hour', 'StartDate'])
             if as_method == 'numpy':
@@ -142,7 +142,7 @@ def getvar(location='US-FPE',
             day = db['daily']
             cur = day.find({'location': location,
                              'StartDate': { '$gte': date_from },
-                             'StartDate': { '$lte': date_to},
+                             'EndDate': { '$lte': date_to},
                              variable: {'$gt': -9999} },
                              [variable, 'Day', 'StartDate'])
             if as_method == 'numpy':
