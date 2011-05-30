@@ -90,7 +90,8 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id', properties=False
                             geometry=geojson.Point((item [x], item[y])),
                             properties=item 
                         )
-                for item in cur if x in item.keys() and y in item.keys() ]), indent=2)
+                for item in cur if x in item.keys() and y in item.keys() ]
+                    ), default=handler,indent=2)
     
     else:
         return geojson.dumps(geojson.FeatureCollection([ 
@@ -98,4 +99,5 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id', properties=False
                             geometry=geojson.Point((item [x], item[y])),
                             properties={'id': item[idcol] } 
                         )
-                for item in cur if x in item.keys() and y in item.keys() ]), indent=2)
+                for item in cur if x in item.keys() and y in item.keys() ], 
+                ), default=handler, indent=2)
