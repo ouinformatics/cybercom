@@ -65,12 +65,12 @@ def find( db=None, col=None, query=None, callback=None, showids=False, date=None
     else:
         return serialized
 
-def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id'):
+def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id', properties=False):
     """
     For a specific lat/lon column pair return GeoJSON representation.
     
     Example:
-    >>> get.find_loc('flora', 'data', x='midlon', y='midlat', idcol='REF_NO')
+    >>> get.find_loc('flora', 'data', x='midlon', y='midlat', idcol='REF_NO', properties= True)
     """
     con = Connection(host)
     if db:
@@ -84,7 +84,16 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id'):
         return json.dumps(db.collection_names())
     
     cur = col.find(fields=[x,y,idcol])
-    return geojson.dumps(geojson.FeatureCollection([ 
+    if properties:
+        return geojson.dumps(geojson.FeatureCollection([ 
+                        geojson.Feature(
+                            geometry=geojson.Point((item [x], item[y])),
+                            properties=item 
+                        )
+                for item in cur if x in item.keys() and y in item.keys() ]), indent=2)
+    
+    else:
+        return geojson.dumps(geojson.FeatureCollection([ 
                         geojson.Feature(
                             geometry=geojson.Point((item [x], item[y])),
                             properties={'id': item[idcol] } 

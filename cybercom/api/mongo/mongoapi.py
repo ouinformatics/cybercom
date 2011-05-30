@@ -23,8 +23,8 @@ class Root(object):
         return find(db, col, query, callback, showids, date)
     @cherrypy.expose
     @mimetype('application/json')
-    def find_loc(self, db=None, col=None, x='lon', y='lat', idcol='_id'):
-        return find_loc( db, col, x, y, idcol)
+    def find_loc(self, db=None, col=None, x='lon', y='lat', idcol='_id', properties=False):
+        return find_loc( db, col, x, y, idcol, properties)
 
 cherrypy.tree.mount(Root())
 application = cherrypy.tree
