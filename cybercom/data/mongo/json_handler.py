@@ -14,6 +14,8 @@ from bson.objectid import ObjectId
 from bson.timestamp import Timestamp
 from bson.tz_util import utc
 
+_RE_TYPE = type(re.compile("foo"))
+
 def handler(obj):
     if isinstance(obj, ObjectId):
         return {"$oid": str(obj)}
