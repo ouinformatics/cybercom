@@ -13,6 +13,8 @@ from bson.min_key import MinKey
 from bson.objectid import ObjectId
 from bson.timestamp import Timestamp
 from bson.tz_util import utc
+from geojson.mapping import Mapping
+from geojson import Feature, FeatureCollection
 
 _RE_TYPE = type(re.compile("foo"))
 
@@ -40,4 +42,10 @@ def handler(obj):
         return {"t": obj.time, "i": obj.inc}
     if _use_uuid and isinstance(obj, uuid.UUID):
         return {"$uuid": obj.hex}
+    if isinstance(obj, Mapping):
+        return dict(obj)
+    if isinstance(obj, Feature):
+        return dict(obj)
+    if isinstance(obj, FeatureCollection):
+        return dict(obj)
     raise TypeError("%r is not JSON serializable" % obj)

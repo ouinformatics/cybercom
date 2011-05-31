@@ -8,7 +8,8 @@ import geojson
 
 host='fire.rccc.ou.edu'
 
-def find( db=None, col=None, query=None, callback=None, showids=False, date=None):
+def find( db=None, col=None, query=None, callback=None, 
+            showids=False, date=None):
     """Find data from a specific mongoDB db and collection
         :param db: Optional, mongodb database, if not specified a list of dbs is returned
         :param col: Optional, mongodb collection
@@ -83,21 +84,22 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id', properties=False
     else:
         return json.dumps(db.collection_names())
     
-    cur = col.find(fields=[x,y,idcol])
     if properties:
+        cur = col.find()
         return geojson.dumps(geojson.FeatureCollection([ 
                         geojson.Feature(
                             geometry=geojson.Point((item [x], item[y])),
                             properties=item 
                         )
                 for item in cur if x in item.keys() and y in item.keys() ]
-                    ), default=handler,indent=2)
+                    ), indent=2, default=handler)
     
     else:
+        cur = col.find(fields=[x,y,idcol])
         return geojson.dumps(geojson.FeatureCollection([ 
                         geojson.Feature(
                             geometry=geojson.Point((item [x], item[y])),
                             properties={'id': item[idcol] } 
                         )
                 for item in cur if x in item.keys() and y in item.keys() ], 
-                ), default=handler, indent=2)
+                ), indent=2, default=handler)
