@@ -59,15 +59,30 @@ def dates(location,aggregation=aggregation, limits=False):
     else:
         return dates
 
-def variables(aggregation=aggregation):
+def units(aggregation=aggregation):
+    from cybercom.data.catalog import datalayer
+    md=datalayer.Metadata()
+    units = md.Search('rt_method_parameters',where="method_code='Ameriflux_%s' ORDER BY param_id" % (aggregation) ,as_method='dict')
+
+
+def variables(aggregation=aggregation, metadata=None):
     """List variables available for a particular aggregation product
     
     Show variables available for a given aggregation:
     >>> ameriflux.variables('weekly')
 
     """
-    db = connect()
-    return db[aggregation].find_one().keys()
+    from cybercom.data.catalog import datalayer
+    md=datalayer.Metadata()
+    output={}
+    variables = md.Search('rt_method_parameters',where="method_code='Ameriflux_%s' ORDER BY param_id" % (aggregation) ,as_method='dict')
+    for item in variables:
+        output.update({item['param_name']: item})
+    if metadata:
+        return output
+    else:
+        return output.keys()
+
 
 def locationinfo(location):
     from cybercom.data.catalog import datalayer
