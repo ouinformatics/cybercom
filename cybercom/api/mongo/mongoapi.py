@@ -16,6 +16,7 @@ class Root(object):
         return None
     @cherrypy.expose
     @mimetype('application/json')
+    @cherrypy.tools.gzip()
     def db_find(self, db=None, col=None, query=None, callback=None, showids=None, date=None):
         """ 
         Wrapper for underlying pymongo access
