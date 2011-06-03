@@ -9,9 +9,11 @@ import simplejson, json, datetime, StringIO, csv, sys
 from sqlalchemy import Table
 from sqlalchemy.sql import select,update
 import db_create as dl
-conn = dl.engine.connect()
+
 
 class Metadata():
+    def __init__(self):
+	self.conn = dl.engine.connect()	
     def Search(self,tablename,column=None,where=None,as_method='dict'):
         #****setup up mapped table
 
@@ -38,7 +40,7 @@ class Metadata():
         if as_method == 'yaml':
             return self._as_yaml(res)
         else:
-            return conn.execute(res) 
+            return self.conn.execute(res) 
 
     def Inserts(self,tablename,parameters):
         '''
@@ -50,7 +52,7 @@ class Metadata():
         for dct in parameters:
             try:
                 inst = tab.insert(dct)
-                conn.execute(inst)#inst.execute(parameters)
+                self.conn.execute(inst)#inst.execute(parameters)
             except Exception as err:
                 print err
                 #print type(err)
@@ -66,7 +68,7 @@ class Metadata():
         '''
         tab = Table(tablename,dl.Base.metadata,autoload=True)
         u = tab.update(where,paramUpdate)
-        conn.execute(u)
+        self.conn.execute(u)
     def Delete(self,tablename,where):
         '''
            Delete records to requsted table
@@ -78,7 +80,7 @@ class Metadata():
         '''
         tab = Table(tablename,dl.Base.metadata,autoload=True)
         d = tab.delete(where)
-        conn.execute(d)
+        self.conn.execute(d)
 
     #**************functions***********
 
@@ -93,7 +95,7 @@ class Metadata():
         """ Zip the header and rows into a python dictionary """
         output = []
         header = self._get_cols( res )
-        res1=conn.execute(res)
+        res1=self.conn.execute(res)
         for row in res1:
             output.append(dict(zip(header, row)))
         return output
@@ -107,7 +109,7 @@ class Metadata():
         outfile = StringIO.StringIO()
         cw = csv.writer(outfile, quotechar = '"', quoting=csv.QUOTE_MINIMAL,skipinitialspace=True)
         cw.writerow( self._get_cols( res ) )
-        cw.writerows( conn.execute(res).fetchall())
+        cw.writerows(self.conn.execute(res).fetchall())
         return outfile.getvalue()
 
     def _as_json(self,res):
