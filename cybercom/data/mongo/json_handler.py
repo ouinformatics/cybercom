@@ -25,7 +25,7 @@ def handler(obj):
         return obj.as_doc()
     if isinstance(obj, datetime.datetime):
         # TODO share this code w/ bson.py?
-        return obj.isoformat()
+        return obj.isoformat() + 'Z'
     if isinstance(obj, _RE_TYPE):
         flags = ""
         if obj.flags & re.IGNORECASE:
