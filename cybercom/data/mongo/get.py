@@ -57,7 +57,7 @@ def find( db=None, col=None, query=None, callback=None,
     elif query and not date:
         query = ast.literal_eval(query)
     else:
-        query = {}
+        pass
         
     # If query set, run query options through pymongo find, else show all records
     if query:
@@ -131,5 +131,3 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id',
                         )
                 for item in cur if x in item.keys() and y in item.keys() ], 
                 ), indent=2, default=handler)
-
-
