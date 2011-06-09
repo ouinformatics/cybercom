@@ -13,7 +13,11 @@ import db_create as dl
 
 class Metadata():
     def __init__(self):
-	self.conn = dl.engine.connect()	
+	self.conn = dl.engine.connect()
+        self.session=dl.session
+        self.session.autoflush=False
+    def getSession(self):
+        return self.session
     def Search(self,tablename,column=None,where=None,as_method='dict'):
         #****setup up mapped table
 
