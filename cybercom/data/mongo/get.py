@@ -131,3 +131,5 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id',
                         )
                 for item in cur if x in item.keys() and y in item.keys() ], 
                 ), indent=2, default=handler)
+
+
