@@ -13,7 +13,11 @@ import db_create as dl
 
 class Metadata():
     def __init__(self):
-	self.conn = dl.engine.connect()	
+	self.conn = dl.engine.connect()
+        self.session=dl.session
+        self.session.autoflush=False
+    def getSession(self):
+        return self.session
     def Search(self,tablename,column=None,where=None,as_method='dict'):
         #****setup up mapped table
 
@@ -52,9 +56,9 @@ class Metadata():
         for dct in parameters:
             try:
                 inst = tab.insert(dct)
-                self.conn.execute(inst)#inst.execute(parameters)
+                return self.conn.execute(inst)#inst.execute(parameters)
             except Exception as err:
-                print err
+               raise err
                 #print type(err)
     def Updates(self,tablename,where,paramUpdate):
         '''
@@ -66,9 +70,12 @@ class Metadata():
             Metadata.Updates('rt_state',"status_flag='A'",{'state_name':'North Dakota'})
             Results: rows with rt_state.status_flag= A --> state_name updated to North Dakota 
         '''
-        tab = Table(tablename,dl.Base.metadata,autoload=True)
-        u = tab.update(where,paramUpdate)
-        self.conn.execute(u)
+        try:
+            tab = Table(tablename,dl.Base.metadata,autoload=True)
+            u = tab.update(where,paramUpdate)
+            return self.conn.execute(u)
+        except:
+            raise
     def Delete(self,tablename,where):
         '''
            Delete records to requsted table
@@ -78,9 +85,12 @@ class Metadata():
             Metadata.Delete('rt_state',"status_flag='A'")
             Results: rows with rt_state.status_flag= A --> Deletes records
         '''
-        tab = Table(tablename,dl.Base.metadata,autoload=True)
-        d = tab.delete(where)
-        self.conn.execute(d)
+        try:
+            tab = Table(tablename,dl.Base.metadata,autoload=True)
+            d = tab.delete(where)
+            return self.conn.execute(d)
+        except:
+            raise
 
     #**************functions***********
 
