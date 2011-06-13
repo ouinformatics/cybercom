@@ -143,6 +143,7 @@ class Metadata():
             return obj.isoformat()
         else:
             raise TypeError, 'Object of type %s with value of %s is not JSON serializable' % (type(Obj), repr(Obj))
+    
     def getprimarykeys(self,tablename=None,as_method='json'):
         keys = []
         dict = {}
@@ -164,6 +165,7 @@ class Metadata():
             return simplejson.dumps(dict, sort_keys=True, indent=2) 
         else:
             return dict
+    
     def listcolumns(self,tablename):
         keys = []
         for t in dl.Base.metadata.sorted_tables:
@@ -171,7 +173,8 @@ class Metadata():
                 for key in t.c:
                     keys.append(key.name)
         return keys
-    def getcolumns(self,tablename=None):
+    
+    def getcolumns(self,tablename=None, as_method='json'):
         keys = []
         dict = {}
         for t in dl.Base.metadata.sorted_tables:
@@ -185,13 +188,20 @@ class Metadata():
                     for key in t.c:
                         keys.append(key.name)
                     dict[t.name]=keys
-        return simplejson.dumps(dict, sort_keys=True, indent=2)
-    def gettables(self):
+        if as_method == 'dict':
+            return dict
+        if as_method == 'json':
+            return simplejson.dumps(dict, sort_keys=True, indent=2)
+    
+    def gettables(self, as_method='json'):
         keys = []
         dict = {}
         for t in dl.Base.metadata.sorted_tables:
             #print t.name
             keys.append(t.name)
         dict['metadata tables']=sorted(set(keys))
-        return simplejson.dumps(dict, indent=2)
+        if as_method == 'dict':
+            return dict
+        if as_method == 'json':
+            return simplejson.dumps(dict, indent=2)
 
