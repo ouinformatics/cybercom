@@ -1,4 +1,5 @@
 from cybercom.data.catalog import datalayer
+from cybercom.util.geojson_tools import mkGeoJSONPoint
 import json
 import cherrypy
 from ast import literal_eval
@@ -41,10 +42,22 @@ class Root():
             return json.dumps(cat.Search(tablename, columns, where = str(whereclause)), indent=2)
         else:
             return "Invalid query"
-    def index(self):
-        return "<a href='search/'>Search</a>"
-
-
+    @cherrypy.expose
+    @mimetype('application/json')
+    def location(self, pkey=None, point=True):
+        tablename='dt_location'
+        cat = datalayer.Metadata()
+        columns = ['commons_id','loc_id', 'lat', 'lon']
+        ref = cat.getprimarykeys(tablename, as_method='dict')
+        if pkey:
+            pkey = pkey.split(',')
+            items = zip(ref[tablename],pkey)
+            qstring = [ "%s = '%s'" % (k,v) for k,v in items if v != 'None']
+            whereclause = ' and '.join(map(str,qstring))
+            return mkGeoJSONPoint(cat.Search(tablename, columns, where=whereclause), latkey='lat', lonkey='lon', attributes=True )
+        else:
+            return "Error, invalid query string"
+        
 cherrypy.tree.mount(Root())
 application = cherrypy.tree
 
