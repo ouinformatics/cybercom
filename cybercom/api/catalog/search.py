@@ -1,6 +1,7 @@
 from cybercom.data.catalog import datalayer
 import json
 import cherrypy
+from ast import literal_eval
 
 def mimetype(type):
     def decorate(func):
@@ -14,17 +15,34 @@ def mimetype(type):
 class Root():
     @cherrypy.expose
     @mimetype('application/json')
-    def search(self,tablename=None, commons_id=None, columns=None):
+    def search(self,tablename=None, columns=None, pkey=None):
         cat = datalayer.Metadata()
-        if columns:
-            columns = columns.split(',')
-        if commons_id:
-            return json.dumps(cat.Search(tablename, column=columns, 
-                                where='commons_id = %s' % commons_id), indent=2)
+        tables = cat.gettables(as_method='dict')
+        # respond to urls /search/
+        if tablename is None:
+            return json.dumps(tables, indent=1)
+        elif tablename not in tables['metadata tables']:
+            return "Specified table does not exist.  Valid tables are: \n %s" % (json.dumps(tables['metadata tables'], indent=2))
+        # respond to urls /search/tablename/
+        if columns is None and tablename:
+            return cat.getcolumns(tablename)
+
+        columns = columns.split(',')
+        ref = cat.getprimarykeys(tablename, as_method='dict')        
+        if pkey is None and tablename:
+            return json.dumps(ref)
+        elif pkey == '*':
+            return json.dumps(cat.Search(tablename, columns), indent=2)
+        elif pkey.find(',') > 0:
+            pkey = pkey.split(',')
+            items = zip(ref[tablename],pkey)
+            qstring = [ "%s = '%s'" % (k,v) for k,v in items if v != 'None']
+            whereclause = ' and '.join(map(str,qstring))
+            return json.dumps(cat.Search(tablename, columns, where = str(whereclause)), indent=2)
         else:
-            return json.dumps(cat.Search(tablename), column=columns, indent=2)
+            return "Invalid query"
     def index(self):
-        return "Yay"
+        return "<a href='search/'>Search</a>"
 
 
 cherrypy.tree.mount(Root())
