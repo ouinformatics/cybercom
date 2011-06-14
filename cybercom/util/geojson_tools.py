@@ -8,7 +8,7 @@ def mkGeoJSONPoint(obj,latkey,lonkey,attributes=False):
         if attributes:
             FC.append( geojson.Feature( geojson.Point((x,y)), properties = item ) )
         else:
-            FC.append( geojson.Feature( geojson.Point((x,y)), properties = item ) )
+            FC.append( geojson.Feature( geojson.Point((x,y)) ) )
     return geojson.dumps(geojson.FeatureCollection( FC ), indent=2)
 
 
