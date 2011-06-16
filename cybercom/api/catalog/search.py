@@ -44,7 +44,7 @@ class Root():
             return "Invalid query"
     @cherrypy.expose
     @mimetype('application/json')
-    def location(self, pkey=None, point=True, attributes=True, transform=False, t_srs=TARGET_PROJECTION, s_srs=SOURCE_PROJECTION):
+    def location(self, pkey=None, point=True, attributes=True, transform=False):
         tablename='dt_location'
         cat = datalayer.Metadata()
         columns = ['commons_id','loc_id', 'lat', 'lon']
@@ -55,7 +55,7 @@ class Root():
             qstring = [ "%s = '%s'" % (k,v) for k,v in items if v != 'None']
             whereclause = ' and '.join(map(str,qstring))
             return mkGeoJSONPoint(cat.Search(tablename, columns, where=whereclause), 
-                    latkey='lat', lonkey='lon', attributes=True, transform, t_srs, s_srs )
+                    latkey='lat', lonkey='lon', attributes=True, transform=transform)
         else:
             return "Error, invalid query string"
         
