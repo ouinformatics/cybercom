@@ -8,6 +8,7 @@ import geojson
 
 host='fire.rccc.ou.edu'
 
+
 def find( db=None, col=None, query=None, callback=None, 
             showids=False, date=None):
     """Find data from a specific mongoDB db and collection
@@ -43,17 +44,28 @@ def find( db=None, col=None, query=None, callback=None,
         start = iso8601.parse_date(start)
         stop = iso8601.parse_date(stop)
         date_spec = { column : { "$gte": start, "$lte": stop } }
-        return date_spec
 
+    if date and query:
+        query = ast.literal_eval(query)
+        q = query["spec"]
+        q = [ (k, v) for k, v in query['spec'].items() ]
+        [ q.append(item) for item in date_spec.items() ]
+        query['spec'] = dict(q) 
+    elif date and not query:
+        query={}
+        query['spec'] = date_spec
+    elif query and not date:
+        query = ast.literal_eval(query)
+    else:
+        pass
+        
     # If query set, run query options through pymongo find, else show all records
     if query:
-        query = ast.literal_eval(query)
-        if date:
-            query.update( { 'spec' : date_spec })
         cur = col.find(**query)
     else:
         cur = col.find()
 
+   
     for item in cur:
         if showids:
             dump_out.append(item)
@@ -66,25 +78,42 @@ def find( db=None, col=None, query=None, callback=None,
     else:
         return serialized
 
-def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id', properties=False):
+def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id', 
+                properties=False, query=None, callback=None):
     """
-    For a specific lat/lon column pair return GeoJSON representation.
+    For a specific lat/lon column pair return GeoJSON representation of the 
+        coordinates.
+
+        :param db: Optional, mongodb database, if not specified a list of dbs is returned
+        :param col: Optional, mongodb collection
+        :praam x: x-coordinate (longitude)
+        :param y: y-coordinate (lattitude)
+        :param query: Optional, query provided as a python dictionary (see pymongo and mongodb docs for query syntax)
+        :param callback: Optional, used for returning output as JSONP (not implemented yet)
+        :param showids: Optional, return mongodb _id's
+        :param date: Optional, helper for simpler syntax in date range queries (broken)
+
     
     Example:
     >>> get.find_loc('flora', 'data', x='midlon', y='midlat', idcol='REF_NO', properties= True)
     """
+    # Make connection
     con = Connection(host)
-    if db:
-        db = con[db]
-    else:
+    
+    # Browse or return databases
+    if db in con.database_names():
+            db = con[db] 
+    else:        
         return json.dumps(con.database_names())
     
-    if col:
+    # Browse or return collections
+    if col in db.collection_names():
         col = db[col]
     else:
         return json.dumps(db.collection_names())
     
-    if properties:
+    # Two types of output, with and without properties
+    if properties: # Return GeoJSON with all properties
         cur = col.find()
         return geojson.dumps(geojson.FeatureCollection([ 
                         geojson.Feature(
@@ -93,8 +122,7 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id', properties=False
                         )
                 for item in cur if x in item.keys() and y in item.keys() ]
                     ), indent=2, default=handler)
-    
-    else:
+    else: # Return GeoJSON with only lat/lon and id column.
         cur = col.find(fields=[x,y,idcol])
         return geojson.dumps(geojson.FeatureCollection([ 
                         geojson.Feature(
