@@ -27,7 +27,7 @@ class Metadata_load():
         custom_field_1 - custom data for cataloged item
         custom_field_2 - custom data for cataloged item
         status_flag - A is default for Active, I Inactive
-        status_data - Single character flag to describe data
+        status_data - 'Data' - metadata for data 'Application' - metadata for applications
         userid - user who cataloged data
         timestamp_created - default to Now() - When item cataloged
         
