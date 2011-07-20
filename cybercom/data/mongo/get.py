@@ -6,7 +6,7 @@ import iso8601
 import json
 import geojson
 
-host='fire.rccc.ou.edu'
+
 
 
 def find( db=None, col=None, query=None, callback=None, 
@@ -22,7 +22,7 @@ def find( db=None, col=None, query=None, callback=None,
         At the moment this method assumes you want output as JSON, should probably refactor to default to dict and
         allow options for JSON/JSONP
     """
-    con = Connection(host)
+    con = Connection()
     # if db is set create db object, else show db names
     if db:
         db = con[db]
@@ -98,7 +98,7 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id',
     >>> get.find_loc('flora', 'data', x='midlon', y='midlat', idcol='REF_NO', properties= True)
     """
     # Make connection
-    con = Connection(host)
+    con = Connection()
     
     # Browse or return databases
     if db in con.database_names():
