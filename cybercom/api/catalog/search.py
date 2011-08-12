@@ -16,7 +16,7 @@ def mimetype(type):
 class Root():
     @cherrypy.expose
     @mimetype('application/json')
-    def search(self,tablename=None, columns=None, pkey=None):
+    def search(self,tablename=None, columns=None, pkey=None, callback=None):
         cat = datalayer.Metadata()
         tables = cat.gettables(as_method='dict')
         # respond to urls /search/
@@ -39,12 +39,16 @@ class Root():
             items = zip(ref[tablename],pkey)
             qstring = [ "%s = '%s'" % (k,v) for k,v in items if v != 'None']
             whereclause = ' and '.join(map(str,qstring))
-            return json.dumps(cat.Search(tablename, columns, where = str(whereclause)), indent=2)
+            serialized =  json.dumps(cat.Search(tablename, columns, where = str(whereclause)), indent=2)
+            if callback:
+                return str(callback) + '(' + serialized + ')'
+            else:
+                return serialized
         else:
             return "Invalid query"
     @cherrypy.expose
     @mimetype('application/json')
-    def location(self, pkey=None, point=True, attributes=True, transform=False):
+    def location(self, pkey=None, point=True, attributes=True, transform=False, callback=None):
         tablename='dt_location'
         cat = datalayer.Metadata()
         columns = ['commons_id','loc_id', 'lat', 'lon']
@@ -54,8 +58,12 @@ class Root():
             items = zip(ref[tablename],pkey)
             qstring = [ "%s = '%s'" % (k,v) for k,v in items if v != 'None']
             whereclause = ' and '.join(map(str,qstring))
-            return mkGeoJSONPoint(cat.Search(tablename, columns, where=whereclause), 
+            serialized = mkGeoJSONPoint(cat.Search(tablename, columns, where=whereclause), 
                     latkey='lat', lonkey='lon', attributes=True, transform=transform)
+            if callback:
+                return str(callback) + '(' + serialized + ')'
+            else
+                return serialized
         else:
             return "Error, invalid query string"
         
