@@ -21,19 +21,38 @@ class Root():
         tables = cat.gettables(as_method='dict')
         # respond to urls /search/
         if tablename is None:
-            return json.dumps(tables, indent=1)
+            serialized = json.dumps(tables, indent=1)
+            if callback:
+                return(callback) + '(' + serialized + ')'
+            else:
+                return serialized
         elif tablename not in tables['metadata tables']:
             return "Specified table does not exist.  Valid tables are: \n %s" % (json.dumps(tables['metadata tables'], indent=2))
         # respond to urls /search/tablename/
         if columns is None and tablename:
-            return cat.getcolumns(tablename)
+            serialized = cat.getcolumns(tablename)
+            if callback:
+                return(callback) + '(' + serialized + ')'
+            else:
+                return serialized
 
         columns = columns.split(',')
         ref = cat.getprimarykeys(tablename, as_method='dict')        
+        
         if pkey is None and tablename:
-            return json.dumps(ref)
+            serialized = json.dumps(ref)
+            if callback:
+                return(callback) + '(' + serialized + ')'
+            else:
+                return serialized
+
         elif pkey == '*':
-            return json.dumps(cat.Search(tablename, columns), indent=2)
+            serialized = json.dumps(cat.Search(tablename, columns), indent=2)
+            if callback:
+                return(callback) + '(' + serialized + ')'
+            else:
+                return serialized
+
         elif pkey.find(',') > 0:
             pkey = pkey.split(',')
             items = zip(ref[tablename],pkey)
