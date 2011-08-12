@@ -62,7 +62,7 @@ class Root():
                     latkey='lat', lonkey='lon', attributes=True, transform=transform)
             if callback:
                 return str(callback) + '(' + serialized + ')'
-            else
+            else:
                 return serialized
         else:
             return "Error, invalid query string"
