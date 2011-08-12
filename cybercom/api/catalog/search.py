@@ -23,7 +23,7 @@ class Root():
         if tablename is None:
             serialized = json.dumps(tables, indent=1)
             if callback:
-                return(callback) + '(' + serialized + ')'
+                return  str(callback) + '(' + serialized + ')'
             else:
                 return serialized
         elif tablename not in tables['metadata tables']:
@@ -32,7 +32,7 @@ class Root():
         if columns is None and tablename:
             serialized = cat.getcolumns(tablename)
             if callback:
-                return(callback) + '(' + serialized + ')'
+                return str(callback) + '(' + serialized + ')'
             else:
                 return serialized
 
@@ -42,14 +42,14 @@ class Root():
         if pkey is None and tablename:
             serialized = json.dumps(ref)
             if callback:
-                return(callback) + '(' + serialized + ')'
+                return str(callback) + '(' + serialized + ')'
             else:
                 return serialized
 
         elif pkey == '*':
             serialized = json.dumps(cat.Search(tablename, columns), indent=2)
             if callback:
-                return(callback) + '(' + serialized + ')'
+                return str(callback) + '(' + serialized + ')'
             else:
                 return serialized
 
