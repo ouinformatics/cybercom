@@ -16,7 +16,7 @@ def mimetype(type):
 class Root():
     @cherrypy.expose
     @mimetype('application/json')
-    def search(self,tablename=None, columns=None, pkey=None, callback=None):
+    def search(self,tablename=None, columns=None, pkey=None, callback=None, **kwargs):
         cat = datalayer.Metadata()
         tables = cat.gettables(as_method='dict')
         # respond to urls /search/
@@ -67,7 +67,7 @@ class Root():
             return "Invalid query"
     @cherrypy.expose
     @mimetype('application/json')
-    def location(self, pkey=None, point=True, attributes=True, transform=False, callback=None):
+    def location(self, pkey=None, point=True, attributes=True, transform=False, callback=None, **kwargs):
         tablename='dt_location'
         cat = datalayer.Metadata()
         columns = ['commons_id','loc_id', 'lat', 'lon']

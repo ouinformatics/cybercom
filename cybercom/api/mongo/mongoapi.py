@@ -17,14 +17,14 @@ class Root(object):
     @cherrypy.expose
     @mimetype('application/json')
     @cherrypy.tools.gzip()
-    def db_find(self, db=None, col=None, query=None, callback=None, showids=None, date=None):
+    def db_find(self, db=None, col=None, query=None, callback=None, showids=None, date=None, **kwargs):
         """ 
         Wrapper for underlying pymongo access
         """
         return find(db, col, query, callback, showids, date)
     @cherrypy.expose
     @mimetype('application/json')
-    def find_loc(self, db=None, col=None, x='lon', y='lat', idcol='_id', properties=False):
+    def find_loc(self, db=None, col=None, x='lon', y='lat', idcol='_id', properties=False, **kwargs):
         return find_loc( db, col, x, y, idcol, properties)
 
 cherrypy.tree.mount(Root())
