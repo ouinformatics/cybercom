@@ -61,7 +61,7 @@ def find( db=None, col=None, query=None, callback=None,
         
     # If query set, run query options through pymongo find, else show all records
     if query:
-        cur = col.find(**query, limit=5000)
+        cur = col.find(limit=5000, **query)
     else:
         cur = col.find(limit=5000)
 
