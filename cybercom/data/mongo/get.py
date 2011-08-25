@@ -115,7 +115,7 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id',
     # Two types of output, with and without properties
     if properties: # Return GeoJSON with all properties
         cur = col.find()
-        return geojson.dumps(geojson.FeatureCollection([ 
+        serialized = geojson.dumps(geojson.FeatureCollection([ 
                         geojson.Feature(
                             geometry=geojson.Point((item[x], item[y])),
                             properties={'id': item[idcol], 'attributes': item }
@@ -124,10 +124,14 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id',
                     ), indent=2, default=handler)
     else: # Return GeoJSON with only lat/lon and id column.
         cur = col.find(fields=[x,y,idcol])
-        return geojson.dumps(geojson.FeatureCollection([ 
+        serialized = geojson.dumps(geojson.FeatureCollection([ 
                         geojson.Feature(
                             geometry=geojson.Point((item[x], item[y])),
                             properties={'id': item[idcol] } 
                         )
                 for item in cur if x in item.keys() and y in item.keys() ], 
                 ), indent=2, default=handler)
+    if callback:
+        return str(callback) + '(' + serialized + ')'
+    else:
+        return serialized
