@@ -8,7 +8,7 @@ from datetime import datetime
 # .pgpass example:
 # echo "fire.rccc.ou.edu:5432:*:username:password" >> ~/.pgpass
 # chmod 600 ~/.pgpass
-engine = create_engine('postgresql://fire.rccc.ou.edu:5432/cybercom')#, echo=True)
+engine = create_engine('postgresql://localhost:5432/cybercom')#fire.rccc.ou.edu:5432/cybercom')#, echo=True)
 engine.execute('set search_path to catalog;')
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -74,6 +74,7 @@ class rt_Variables(Base):
     status_flag = Column(String(1), server_default='A') # 'A' Active 'I' Inactive
     var_short_name= Column(String(30))
     remark = Column(String(2000))
+    userid = Column(String(20))
 
 class rt_Unit(Base):
     __tablename__= 'rt_unit'
@@ -173,7 +174,7 @@ class dt_Data_commons(Base):
 
 class dt_People(Base):
     __tablename__ = 'dt_people'
-    people_id = Column(Integer, primary_key =True)
+    people_id = Column(String(50), primary_key =True)
     person_name = Column(String(255))
     title = Column(String(100))
     address1 = Column(String(80))
@@ -189,7 +190,7 @@ class dt_People(Base):
 class dt_Contributors(Base):
     __tablename__ = 'dt_contributors'
     commons_id = Column(Integer,ForeignKey("dt_data_commons.commons_id" ,onupdate="CASCADE"), primary_key = True)
-    people_id = Column(Integer,ForeignKey("dt_people.people_id" ,onupdate="CASCADE"), autoincrement=False, primary_key = True)
+    people_id = Column(String(50),ForeignKey("dt_people.people_id" ,onupdate="CASCADE"), primary_key = True)
     project_title = Column(String(255))
     description = Column(String(255))
     remark =  Column(String(2000))
@@ -250,6 +251,8 @@ class dt_Result(Base):
     stat_result = Column(String(100))
     validated = Column(String(300))
     remark = Column(String(2000))
+    userid = Column(String(20))
+    result_id = Column(Integer)
     status_flag = Column(String(1), server_default='A') # A - Active I - Inactive
 
 Base.metadata.create_all(engine)
