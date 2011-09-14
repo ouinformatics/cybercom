@@ -8,8 +8,8 @@ from datetime import datetime
 # .pgpass example:
 # echo "fire.rccc.ou.edu:5432:*:username:password" >> ~/.pgpass
 # chmod 600 ~/.pgpass
-engine = create_engine('postgresql://localhost:5432/cybercom')#fire.rccc.ou.edu:5432/cybercom')#, echo=True)
-engine.execute('set search_path to catalog;')
+engine = create_engine('postgresql://fire.rccc.ou.edu:5432/catalog')#bercom')#fire.rccc.ou.edu:5432/cybercom')#, echo=True)
+engine.execute('set search_path to public;')
 Session = sessionmaker(bind=engine)
 session = Session()
 
