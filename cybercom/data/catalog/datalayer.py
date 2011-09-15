@@ -18,7 +18,7 @@ class Metadata():
         self.session.autoflush=False
     def getSession(self):
         return self.session
-    def Search(self,tablename,column=None,where=None,as_method='dict'):
+    def Search(self,tablename,column=None,where=None,as_method='dict',isPage=False,page=1,result_per_page=1000):
         #****setup up mapped table
 
         tab = Table(tablename,dl.Base.metadata,autoload=True)
@@ -32,9 +32,10 @@ class Metadata():
                 if col.name in column:
                     cols.append(col)
             saObj = select(cols,where)
-
-        res = saObj
-
+        if isPage:
+            res = saObj.limit(result_per_page).offset(((page-1) * result_per_page))
+        else:
+            res = saObj
         if as_method == 'dict':
             return self._as_dict( res )
         if as_method == 'csv':
