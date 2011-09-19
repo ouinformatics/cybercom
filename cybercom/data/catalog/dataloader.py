@@ -1,5 +1,5 @@
 #from cybercom.data.catalog import datalayer
-import pymongo, ast, shlex,os
+import pymongo, ast, shlex,os,sys
 import datalayer
 
 class Metadata_load():
@@ -41,6 +41,7 @@ class Metadata_load():
             return dict(zip(pkcol,val))
         except Exception as inst:
             raise inst
+    
     def event_result(self,eventDict,resultListDict):
         pkcol=self.metadata.getprimarykeys('dt_event',as_method='dict')['dt_event']
         result = self.metadata.Inserts('dt_event',[eventDict,])
@@ -50,6 +51,14 @@ class Metadata_load():
             rstdict['event_id']=eventpk['event_id']
             rstdict['commons_id']=eventpk['commons_id']
             result = self.metadata.Inserts('dt_result',[rstdict,])
+    def repo_insertRow(self,tablename,param):
+        try:
+            pkcol=self.metadata.getprimarykeys(tablename,as_method='dict')[tablename]
+            result = self.metadata.Inserts(tablename,[param,])
+            val=result.inserted_primary_key
+            return dict(zip(pkcol,val))
+        except Exception as inst:
+            raise inst
     def event_local_file(self,commons_id,cat_id, filepath,server,userid,eventUpdateDict={'event_name':'Local File Storage','event_desc':'Local File Storage'}):
         eparam = {'commons_id':commons_id,'cat_id':cat_id,'event_type':'Metadata','event_method':'Local_File'}
         eparam['userid'] = userid #os.getlogin()
