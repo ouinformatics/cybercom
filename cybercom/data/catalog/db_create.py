@@ -8,8 +8,11 @@ from datetime import datetime
 # .pgpass example:
 # echo "fire.rccc.ou.edu:5432:*:username:password" >> ~/.pgpass
 # chmod 600 ~/.pgpass
-engine = create_engine('postgresql://fire.rccc.ou.edu:5432/catalog')#bercom')#fire.rccc.ou.edu:5432/cybercom')#, echo=True)
-engine.execute('set search_path to public;')
+engine = create_engine('postgresql://fire.rccc.ou.edu:5432/catalog')#production
+engine.execute('set search_path to public;')#production
+#engine = create_engine('postgresql://localhost:5432/cybercom')#mstacy Home
+#engine.execute('set search_path to catalog;')#mstacy Home
+
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -55,7 +58,7 @@ class rt_Method_parameters(Base):
     param_name = Column(String(255))
     param_desc = Column(String(500))
     param_value = Column(String(255))
-
+    method_id = Column(Integer)
 class rt_Location_type(Base):
     __tablename__= 'rt_location_type'
 
