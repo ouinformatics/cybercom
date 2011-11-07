@@ -2,12 +2,14 @@ from sqlalchemy import create_engine, ForeignKeyConstraint, ForeignKey, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
+#from geoalchemy import * 
 #from sqlalchemy.schema import *
 
 # This should work as long as the user has a .pgpass setup
 # .pgpass example:
 # echo "fire.rccc.ou.edu:5432:*:username:password" >> ~/.pgpass
 # chmod 600 ~/.pgpass
+#engine = create_engine('postgresql://localhost:5432/jduckles', echo=True)#testing
 engine = create_engine('postgresql://fire.rccc.ou.edu:5432/catalog')#production
 engine.execute('set search_path to public;')#production
 #engine = create_engine('postgresql://localhost:5432/cybercom')#mstacy Home
@@ -99,8 +101,8 @@ class rt_Unit_conversion(Base):
 
 class dt_Location(Base):
     __tablename__ = 'dt_location'
-
     loc_id = Column(String(60), primary_key= True)
+    #geom = GeometryColumn(Polygon(2, srid=3395))
     commons_id = Column(Integer,autoincrement=False, primary_key = True)
     loc_name = Column(String(255))
     data_provider = Column(String(20))
