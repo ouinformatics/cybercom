@@ -13,7 +13,20 @@ def mimetype(type):
     return decorate
 
 
+
 class Root():
+    @cherrypy.expose
+    @mimetype('application/json')
+    def items(self,commons_id, pattern=None, callback=None, **kwargs):
+        cat = datalayer.Metadata()
+        if pattern:
+            catalog = cat.Search('dt_catalog', ['cat_id','cat_name'], where='commons_id = %s and cat_name ~ \'%s\'' % (commons_id, pattern))        
+        else:
+            catalog = cat.Search('dt_catalog', ['cat_id','cat_name'], where='commons_id = %s' % (commons_id))
+        if callback:
+            return '%s(%s)' % (callback, json.dumps(catalog, indent=2))
+        else:
+            return json.dumps(catalog, indent=2)
     @cherrypy.expose
     @mimetype('application/json')
     def search(self,tablename=None, columns=None, pkey=None, callback=None, **kwargs):
