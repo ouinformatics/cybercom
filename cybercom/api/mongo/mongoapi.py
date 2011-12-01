@@ -11,6 +11,7 @@ def mimetype(type):
     return decorate
 
 class Root(object):
+    _cp_config = {'tools.gzip.on': True, 'tools.gzip.mime_types': ['text/*']}
     @cherrypy.expose
     def index(self):
         return None
