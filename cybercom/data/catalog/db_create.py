@@ -257,7 +257,17 @@ class dt_Result(Base):
     userid = Column(String(20))
     result_id = Column(Integer)
     status_flag = Column(String(1), server_default='A') # A - Active I - Inactive
-
+class eomf_Event_Product(Base):
+    __tablename__ = 'eomf_event_product'
+    event_name = Column(String(255))
+    event_date = Column(DateTime)
+    var_id = Column(String(30),primary_key=True)
+    result_text = Column(String(2000))
+    loc_id = Column(String(60))
+    country = Column(String(30))
+    event_id = Column(Integer,primary_key=True)
+    cat_id = Column(Integer)
+    autoload=True
 Base.metadata.create_all(engine)
 
 session.commit()
