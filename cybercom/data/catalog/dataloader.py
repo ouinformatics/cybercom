@@ -97,14 +97,14 @@ class Mongo_load():
             print type(inst)
             print inst
             return False
-    def file2mongo(self,filename,collection,file_type='fixed_width',addDict=None,specificOperation=None,skiplines=0,skiplinesAfterHeader=0):
+    def file2mongo(self,filename,collection,file_type='fixed_width',addDict=None,specificOperation=None,seperator=',',skiplines=0,skiplinesAfterHeader=0):
         if file_type == 'fixed_width':
             self.file_fixed_width(filename,collection,addDict,specificOperation,skiplines,skiplinesAfterHeader)
         elif file_type == 'csv':
-            self.file_csv(filename,collection,addDict,specificOperation,skiplines,skiplinesAfterHeader)
+            self.file_csv(filename,collection,addDict,specificOperation,seperator,skiplines,skiplinesAfterHeader)
         else:
             raise NameError('file_type: ' + file_type + ' is not supported.(fixed_width or csv filetypes supported') 
-    def file_csv(self,filename,collection,addDict=None,specificOperation=None, skiplines=0,skiplinesAfterHeader=0):
+    def file_csv(self,filename,collection,addDict=None,specificOperation=None,seperator=',', skiplines=0,skiplinesAfterHeader=0):
         '''Takes csv file and inserts into Mongodb.
            filename: full path with file
            addDict: Optional Dictionary with key elements you want to add to each row
@@ -134,7 +134,7 @@ class Mongo_load():
                 if not specificOperation == None:
                     specificOperation(temp)
                 insertList.append(temp)
-                if count%1000 == 0:
+                if count%500 == 0:
                     self.insert(collection,insertList)
                     insertList=[]
                 count= count +1
@@ -169,7 +169,7 @@ class Mongo_load():
                 if not specificOperation == None:
                     specificOperation(temp)
                 insertList.append(temp)
-                if count%1000 == 0:
+                if count%500 == 0:
                     self.insert(collection,insertList)
                     insertList=[]
                 count= count +1
