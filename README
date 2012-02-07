@@ -1,1 +1,13 @@
 A python library for the Oklahoma Kansas cyberCommons for Ecological Informatics
+
+
+## Installation ## 
+
+pip install https://github.com/ouinformatics/cybercom/tarball/master
+
+
+## Usage ##
+
+from cybercom.data.catalog import datalayer
+md = datalayer.Metadata()
+md.Search('dt_catalog')
