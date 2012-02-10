@@ -1,7 +1,7 @@
 import cherrypy
 import json 
-#from cybercom.data.mongo.get import find,group, find_loc
-from get import find,group, find_loc
+from cybercom.data.mongo.get import find,group, find_loc
+
 def mimetype(type):
     def decorate(func):
         def wrapper(*args, **kwargs):

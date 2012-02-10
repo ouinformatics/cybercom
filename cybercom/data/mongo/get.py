@@ -5,7 +5,7 @@ import ast
 import iso8601
 import json
 import geojson
-
+from bson.code import Code
 
 
 
@@ -72,6 +72,63 @@ def find( db=None, col=None, query=None, callback=None,
         else:
             item.pop('_id')
             dump_out.append(item)
+    serialized = json.dumps(dump_out, default = handler, sort_keys=True, indent=4)
+    if callback is not None:
+        return str(callback) + '(' + serialized + ')'
+    else:
+        return serialized
+def group(db=None, col=None, key=None,variable=None,query=None, callback=None):
+            #showids=False, date=None):
+    """Find data from a specific mongoDB db and collection
+        :param db: Optional, mongodb database, if not specified a list of dbs is returned
+        :param col: Optional, mongodb collection
+        :param query: Optional, query provided as a python dictionary (see pymongo and mongodb docs for query syntax)
+        :param callback: Optional, used for returning output as JSONP
+        :param showids: Optional, return mongodb _id's
+        :param date: Optional, helper for simpler syntax in date range queries (broken)
+    
+        At the moment this method assumes you want output as JSON, should probably refactor to default to dict and
+        allow options for JSON/JSONP
+    """
+    con = Connection('fire.rccc.ou.edu')
+    # if db is set create db object, else show db names
+    if db:
+        db = con[db]
+    else:
+        return json.dumps(con.database_names())
+    # If collection is set return records, else show collection names
+    if col:
+        col = db[col]
+    else:
+        return json.dumps(db.collection_names())
+
+    dump_out = []
+    #print 'her'
+    #query = ast.literal_eval(query)
+
+    # If query set, run query options through pymongo find, else show all records
+    if query:
+        query = ast.literal_eval(query)
+        cur = col.find(**query).limit(1)[0]
+    else:
+        query={}
+        cur = col.find().limit(1)[0]
+    if not key:
+        return json.dumps("key is a list of keys you want to group by - " + str(cur.keys()))
+    if variable:
+        if not variable in cur.keys():
+            return json.dumps("variable is a string of the key you want to aggregate - " + str(cur.keys()))
+    else:
+        return json.dumps("variable is a string of the key you want to aggregate - " + str(cur.keys()))
+    reduce = Code(" function(obj,prev) {prev.Sum += obj.%s;prev.count+=1; prev.Avg = prev.Sum/prev.count;}" % (variable))
+    results = col.group(ast.literal_eval(key),query,{'Sum':0,'Avg':0,'count':0,'Variable':variable},reduce)
+    dump_out = list(results)
+    #for item in cur:
+   #     if showids:
+   #         dump_out.append(item)
+   #     else:
+   #         item.pop('_id')
+   #         dump_out.append(item)
     serialized = json.dumps(dump_out, default = handler, sort_keys=True, indent=4)
     if callback is not None:
         return str(callback) + '(' + serialized + ')'
