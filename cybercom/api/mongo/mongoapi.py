@@ -1,6 +1,6 @@
 import cherrypy
 import json 
-from cybercom.data.mongo.get import find,group, find_loc
+from cybercom.data.mongo.get import find,group, find_loc, distinct
 
 def mimetype(type):
     def decorate(func):
