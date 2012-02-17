@@ -78,7 +78,7 @@ def find( db=None, col=None, query=None, callback=None,
     else:
         return serialized
 
-def distinct(db=None, col=None, distinct_key=None, query=None):
+def distinct(db=None, col=None, distinct_key=None, query=None, callback=None):
     con = Connection()
 
     if db:
@@ -98,7 +98,10 @@ def distinct(db=None, col=None, distinct_key=None, query=None):
         for item in cur:
             item.pop('_id')
             dump_out.append(item)
-        return json.dumps(dump_out, default = handler, sort_keys=True, indent=4)
+        if callback:
+            return str(callback) + '(' json.dumps(dump_out, default = handler, sort_keys=True, indent=4) + ')'
+        else:
+            return json.dumps(dump_out, default = handler, sort_keys=True, indent=4)
     else:
         return json.dumps({ "error": "You must supply a distinct_key and query specification"})
 

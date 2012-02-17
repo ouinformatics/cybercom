@@ -26,6 +26,11 @@ class Root(object):
     @cherrypy.expose
     @mimetype('application/json')
     @cherrypy.tools.gzip()
+    def distinct(self, db=None, col=None, distinct_key=None, query=None, callback=None, **kwargs):
+        return distinct(db,col,distinct_key,query,callback)
+    @cherrypy.expose
+    @mimetype('application/json')
+    @cherrypy.tools.gzip()
     def group_by(self, db=None, col=None,key=None,variable=None, query=None,callback=None, **kwargs):
         """ 
         Wrapper for underlying pymongo access
