@@ -99,7 +99,7 @@ def distinct(db=None, col=None, distinct_key=None, query=None, callback=None):
             item.pop('_id')
             dump_out.append(item)
         if callback:
-            return str(callback) + '(' json.dumps(dump_out, default = handler, sort_keys=True, indent=4) + ')'
+            return str(callback) + '(' + json.dumps(dump_out, default = handler, sort_keys=True, indent=4) + ')'
         else:
             return json.dumps(dump_out, default = handler, sort_keys=True, indent=4)
     else:
