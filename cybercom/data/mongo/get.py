@@ -77,6 +77,31 @@ def find( db=None, col=None, query=None, callback=None,
         return str(callback) + '(' + serialized + ')'
     else:
         return serialized
+
+def distinct(db=None, col=None, distinct_key=None, query=None):
+    con = Connection()
+
+    if db:
+        db=con[db]
+    else:
+        return json.dumps(con.database_name())
+
+    if col:
+        col = db[col]
+    else:
+        return json.dumps(db.collection_names())
+
+    dump_out = []
+    if query and distinct:
+        query = ast.literal_eval(query)
+        cur = col.find(**query).distinct(distinct_key)
+        for item in cur:
+            item.pop('_id')
+            dump_out.append(item)
+        return json.dumps(dump_out, default = handler, sort_keys=True, indent=4)
+    else:
+        return json.dumps({ "error": "You must supply a distinct_key and query specification"})
+
 def group(db=None, col=None, key=None,variable=None,query=None, callback=None):
             #showids=False, date=None):
     """Find data from a specific mongoDB db and collection
@@ -90,7 +115,7 @@ def group(db=None, col=None, key=None,variable=None,query=None, callback=None):
         At the moment this method assumes you want output as JSON, should probably refactor to default to dict and
         allow options for JSON/JSONP
     """
-    con = Connection('fire.rccc.ou.edu')
+    con = Connection()
     # if db is set create db object, else show db names
     if db:
         db = con[db]
