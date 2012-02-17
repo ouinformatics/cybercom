@@ -96,7 +96,6 @@ def distinct(db=None, col=None, distinct_key=None, query=None, callback=None):
         query = ast.literal_eval(query)
         cur = col.find(**query).distinct(distinct_key)
         for item in cur:
-            item.pop('_id')
             dump_out.append(item)
         if callback:
             return str(callback) + '(' + json.dumps(dump_out, default = handler, sort_keys=True, indent=4) + ')'
