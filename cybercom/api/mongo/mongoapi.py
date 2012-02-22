@@ -1,5 +1,5 @@
 import cherrypy
-import json 
+import simplejson as json 
 from cybercom.data.mongo.get import find,group, find_loc, distinct
 
 def mimetype(type):
