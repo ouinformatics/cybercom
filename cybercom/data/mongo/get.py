@@ -3,7 +3,7 @@ from datetime import datetime
 from json_handler import handler
 import ast
 import iso8601
-import json
+import simplejson as json
 import geojson
 from bson.code import Code
 
