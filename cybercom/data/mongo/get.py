@@ -1,4 +1,4 @@
-from pymongo import Connection
+from pymongo import ReplicaSetConnection, Connection, ReadPreference
 from datetime import datetime
 from json_handler import handler
 import ast
@@ -116,7 +116,7 @@ def group(db=None, col=None, key=None,variable=None,query=None, callback=None):
         At the moment this method assumes you want output as JSON, should probably refactor to default to dict and
         allow options for JSON/JSONP
     """
-    con = Connection()
+    con = Connection(replicaset='cybercom',read_preference=ReadPreference.SECONDARY)
     # if db is set create db object, else show db names
     if db:
         db = con[db]
