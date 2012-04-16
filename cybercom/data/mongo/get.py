@@ -7,7 +7,7 @@ import simplejson as json
 import geojson
 from bson.code import Code
 
-
+MONGOHOST='fire.rccc.ou.edu'
 
 def find( db=None, col=None, query=None, callback=None, 
             showids=False, date=None):
@@ -22,7 +22,7 @@ def find( db=None, col=None, query=None, callback=None,
         At the moment this method assumes you want output as JSON, should probably refactor to default to dict and
         allow options for JSON/JSONP
     """
-    con = Connection()
+    con = Connection(MONGOHOST)
     # if db is set create db object, else show db names
     if db:
         db = con[db]
@@ -79,7 +79,7 @@ def find( db=None, col=None, query=None, callback=None,
         return serialized
 
 def distinct(db=None, col=None, distinct_key=None, query=None, callback=None):
-    con = Connection()
+    con = Connection(MONGOHOST)
 
     if db:
         db=con[db]
@@ -116,7 +116,7 @@ def group(db=None, col=None, key=None,variable=None,query=None, callback=None):
         At the moment this method assumes you want output as JSON, should probably refactor to default to dict and
         allow options for JSON/JSONP
     """
-    con = Connection(replicaset='cybercom',read_preference=ReadPreference.SECONDARY)
+    con = Connection(MONGOHOST, replicaset='cyebrcom', read_preference=ReadPreference.SECONDARY)
     # if db is set create db object, else show db names
     if db:
         db = con[db]
@@ -175,7 +175,7 @@ def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id',
     >>> get.find_loc('flora', 'data', x='midlon', y='midlat', idcol='REF_NO', properties= True)
     """
     # Make connection
-    con = Connection()
+    con = Connection(MONGOHOST)
     
     # Browse or return databases
     if db in con.database_names():
