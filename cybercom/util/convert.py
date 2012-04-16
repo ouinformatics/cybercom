@@ -30,7 +30,7 @@ def geoJSONAttributes_processor(entity):
         logging.error(sys.exc_info())
     try:
         outfile = StringIO()
-        df.to_csv(outfile)
+        df.to_csv(outfile, index=False)
         outfile.seek(0)
         outdata = outfile.read()
         return outdata
@@ -66,12 +66,13 @@ def shapefile_processor(entity):
             zipfile.writestr(os.path.basename(filename), open(filename, 'r').read() )
         zipfile.close()
         outfile.seek()
+        logging.info('Cleaning up...')
+        shutil.rmtree(tempdir)
+        return outfile
     except:
         logging.error('''Problem zipping output''')
-        logging.error(sys.exec_info())
-    logging.info('Cleaning up...')
-    shutil.rmtree(tempdir)
-    return outfile
+        logging.error(sys.exc_info())
+        
 
 def csvfile_processor(entity):
     """ Use pandas to convert a list of json documents to a CSV file """
