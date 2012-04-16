@@ -1,6 +1,7 @@
 import cherrypy
 import simplejson as json 
 from cybercom.data.mongo.get import find,group, find_loc, distinct
+from cybercom.util.convert import *
 
 def mimetype(type):
     def decorate(func):
@@ -10,6 +11,23 @@ def mimetype(type):
         return wrapper
     return decorate
 
+def convert_output(entity,outtype=None):
+    if outtype == 'json' or outtype == None:
+        cherrypy.response.headers['Content-Type'] = 'application/json'
+        return entity
+    if outtype == 'csv':
+        cherrypy.response.headers['Content-Type'] = 'text/csv'
+        return csvfile_processor(entity)
+    if outtype == 'shp':
+        cherrypy.response.headers['Content-Type'] = 'application/zip'
+        return shapefile_processor(entity)
+    if outtype == 'geojson':
+        cherrypy.response.headers['Content-Type'] = 'application/json'
+        return geoJSON_processor(entity)
+    if outtype == 'geojsonattrib':
+        cherrypy.response.headers['Content-Type'] = 'text/csv'
+        return geoJSONAttributes_processor(entity)
+
 class Root(object):
     _cp_config = {'tools.gzip.on': True, 'tools.gzip.mime_types': ['text/*', 'application/json']}
     @cherrypy.expose
@@ -18,11 +36,11 @@ class Root(object):
     @cherrypy.expose
     @mimetype('application/json')
     @cherrypy.tools.gzip()
-    def db_find(self, db=None, col=None, query=None, callback=None, showids=None, date=None, **kwargs):
+    def db_find(self, db=None, col=None, query=None, callback=None, showids=None, date=None, outtype=None, **kwargs):
         """ 
         Wrapper for underlying pymongo access
         """
-        return find(db, col, query, callback, showids, date)
+        return convert_output(find(db, col, query, callback, showids, date),outtype)
     @cherrypy.expose
     @mimetype('application/json')
     @cherrypy.tools.gzip()
