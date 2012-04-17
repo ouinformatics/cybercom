@@ -7,7 +7,7 @@ import simplejson as json
 import geojson
 from bson.code import Code
 
-MONGOHOST='fire.rccc.ou.edu'
+MONGOHOST='localhost'
 
 def find( db=None, col=None, query=None, callback=None, 
             showids=False, date=None):
