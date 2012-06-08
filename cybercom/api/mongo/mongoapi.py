@@ -49,11 +49,11 @@ class Root(object):
     @cherrypy.expose
     @mimetype('application/json')
     @cherrypy.tools.gzip()
-    def group_by(self, db=None, col=None,key=None,variable=None, query=None,callback=None, **kwargs):
+    def group_by(self, db=None, col=None,key=None,variable=None, query=None,callback=None, outtype=None, **kwargs):
         """ 
         Wrapper for underlying pymongo access
         """
-        return group(db, col, key,variable,query,callback)
+        return convert_output(group(db, col, key,variable,query,callback),outtype)
     @cherrypy.expose
     @mimetype('application/json')
     def find_loc(self, db=None, col=None, x='lon', y='lat', idcol='_id', properties=False, query=None, callback=None, **kwargs):
