@@ -146,14 +146,30 @@ def group(db=None, col=None, key=None,variable=None,query=None, callback=None):
     reduce = Code(" function(obj,prev) {prev.Sum += obj.%s;prev.count+=1; prev.Avg = prev.Sum/prev.count;}" % (variable))
     results = col.group(ast.literal_eval(key),query,{'Sum':0,'Avg':0,'count':0,'Variable':variable},reduce)
     #dump_out = list(results)
-    for item in results:
-        dump_out.append(item)
+    try:
+        sortlist=ast.literal_eval(key)
+        dump_out = multikeysort(results, sortlist)
+    except Exception as inst:
+        dump_out = results
+    #for item in results:
+    #    dump_out.append(item)
    #serialize and return JSON or JSONP
     serialized = json.dumps(dump_out, default = handler, sort_keys=True, indent=4)
     if callback is not None:
         return str(callback) + '(' + serialized + ')'
     else:
         return serialized
+
+def multikeysort(items, columns):
+    comparers = [ ((itemgetter(col[1:].strip()), -1) if col.startswith('-') else (itemgetter(col.strip()), 1)) for col in columns]
+    def comparer(left, right):
+        for fn, mult in comparers:
+            result = cmp(fn(left), fn(right))
+            if result:
+                return mult * result
+        else:
+            return 0
+    return sorted(items, cmp=comparer)
 
 def find_loc( db=None, col=None, x='lon', y='lat', idcol='_id', 
                 properties=False, query=None, callback=None):
