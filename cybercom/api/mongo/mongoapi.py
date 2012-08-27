@@ -1,6 +1,7 @@
 import cherrypy
 import simplejson as json 
-from cybercom.data.mongo.get import find,group, find_loc, distinct
+from cybercom.data.mongo.get import data 
+#find,group, find_loc, distinct
 from cybercom.util.convert import *
 
 def mimetype(type):
@@ -30,6 +31,8 @@ def convert_output(entity,outtype=None):
 
 class Root(object):
     _cp_config = {'tools.gzip.on': True, 'tools.gzip.mime_types': ['text/*', 'application/json']}
+    def __init__(self):
+        self.data = data()
     @cherrypy.expose
     def index(self):
         return None
@@ -40,12 +43,12 @@ class Root(object):
         """ 
         Wrapper for underlying pymongo access
         """
-        return convert_output(find(db, col, query, callback, showids, date),outtype)
+        return convert_output(self.data.find(db, col, query, callback, showids, date),outtype)
     @cherrypy.expose
     @mimetype('application/json')
     @cherrypy.tools.gzip()
     def distinct(self, db=None, col=None, distinct_key=None, query=None, callback=None, **kwargs):
-        return distinct(db,col,distinct_key,query,callback)
+        return self.data.distinct(db,col,distinct_key,query,callback)
     @cherrypy.expose
     @mimetype('application/json')
     @cherrypy.tools.gzip()
@@ -53,11 +56,11 @@ class Root(object):
         """ 
         Wrapper for underlying pymongo access
         """
-        return convert_output(group(db, col, key,variable,query,callback),outtype)
+        return convert_output(self.data.group(db, col, key,variable,query,callback),outtype)
     @cherrypy.expose
     @mimetype('application/json')
     def find_loc(self, db=None, col=None, x='lon', y='lat', idcol='_id', properties=False, query=None, callback=None, **kwargs):
-        return find_loc( db, col, x, y, idcol, properties, query, callback)
+        return self.data.find_loc( db, col, x, y, idcol, properties, query, callback)
 
 cherrypy.tree.mount(Root())
 application = cherrypy.tree
