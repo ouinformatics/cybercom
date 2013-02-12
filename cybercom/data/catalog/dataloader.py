@@ -115,12 +115,16 @@ class Mongo_load():
         f2=open(filename,'r')
         for skip in range(skiplines):
             f2.readline()
-        header = f2.readline().split(seperator)
+        header = f2.readline()
+        header = "".join(header.split()).split(seperator)
         for skip in range(skiplinesAfterHeader):
             f2.readline()
         count= 1
         for line in f2:
-            arow=line.split(seperator)
+            arow=line#.split(seperator)
+            arow="".join(arow.split()).split(seperator)
+            if len(header)+1 ==len(arow):
+                header.append('error_handle')
             if len(header)==len(arow):
                 row=[]
                 for data in arow:
