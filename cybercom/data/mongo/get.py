@@ -136,7 +136,7 @@ class data():
         # If query set, run query options through pymongo find, else show all records
         if query:
             query = ast.literal_eval(query)
-            cur = col.find(**query).limit(1)[0]
+            cur = col.find(query).limit(1)[0]
         else:
             query={}
             cur = col.find().limit(1)[0]
